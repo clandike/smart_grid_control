@@ -1,0 +1,63 @@
+﻿@using BAL.DTO
+@model ProjectDTO
+
+<div class="container mt-5" style="max-width: 700px;">
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+
+            <h2 class="mb-4 fw-bold text-center">Add New Project</h2>
+
+            <form asp-controller="project" asp-action="create" method="post">
+
+                <div class="mb-3">
+                    <label asp-for="@Model.Name" class="form-label fw-semibold"></label>
+                    <input asp-for="@Model.Name" class="form-control" placeholder="Enter project name" />
+                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="@Model.Location" class="form-label fw-semibold"></label>
+                    <input asp-for="@Model.Location" class="form-control" placeholder="Enter project location" />
+                    <span asp-validation-for="@Model.Location" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="@Model.TimeZone" class="form-label fw-semibold"></label>
+                    <input asp-for="@Model.TimeZone" class="form-control" placeholder="UTC+2, GMT-5, ..." />
+                    <span asp-validation-for="@Model.TimeZone" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <select name="@Model.UnitId" class="form-select">
+                        <option value="">Одиниці</option>
+                        @foreach (var unit in ViewBag.Units as IEnumerable<string>)
+                        {
+                            <option value="@unit">@unit</option>
+                        }
+                    </select>
+                    </div>
+                
+                @* <div class="mb-3">
+                    <label asp-for="@Model.UnitId" class="form-label fw-semibold"></label>
+                    <input asp-for="@Model.UnitId" type="number" class="form-control" />
+                    <span asp-validation-for="@Model.UnitId" class="text-danger"></span>
+                </div> *@
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-controller="project" asp-action="index" class="btn btn-outline-secondary px-4">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        Add Project
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

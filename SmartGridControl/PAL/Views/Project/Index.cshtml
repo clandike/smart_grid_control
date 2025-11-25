@@ -1,0 +1,28 @@
+﻿@using BAL.DTO
+@model IEnumerable<ProjectDTO>
+@{
+    ViewData["Title"] = "Projects";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Projects</h2>
+    <div class="row">
+        @foreach (var project in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@project.Name</h5>
+                        <p class="card-text">
+                            <strong>Location:</strong> @project.Location <br />
+                            <strong>Time Zone:</strong> @project.TimeZone <br />
+                            <strong>Unit:</strong> @project.UnitId <br />
+                            <strong>Created:</strong> @project.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                        </p>
+                        <a asp-page="" asp-route-id="@project.Id" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
