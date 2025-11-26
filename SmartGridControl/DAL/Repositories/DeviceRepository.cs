@@ -21,6 +21,29 @@ namespace DAL.Repositories
             await ExecuterSqlCommands.ExecuteNonQuearyAsync(connectionFactory, stringQuery, new { id });
         }
 
+        public async Task CreateAsync(Device entity)
+        {
+            var stringQuery = @"
+            INSERT INTO Device (ProjectId, Name, TypeId, RatedPower, Priority, Critical, MinOnTime, MinOffTime, EstimatedEnergyPerCycle, FlexibilityStart, FlexibilityEnd, StateId)
+            VALUES (@ProjectId, @Name, @TypeId, @RatedPower, @Priority, @Critical, @MinOnTime, @MinOffTime, @EstimatedEnergyPerCycle, @FlexibilityStart, @FlexibilityEnd, @StateId);";
+
+            await ExecuterSqlCommands.ExecuteNonQuearyAsync(connectionFactory, stringQuery, new
+            {
+                entity.ProjectId,
+                entity.Name,
+                entity.TypeId,
+                entity.RatedPower,
+                entity.Priority,
+                entity.Critical,
+                entity.MinOnTime,
+                entity.MinOffTime,
+                entity.EstimatedEnergyPerCycle,
+                entity.FlexibilityStart,
+                entity.FlexibilityEnd,
+                entity.StateId
+            });
+        }
+
         public async Task<IEnumerable<Device>> GetAllAsync()
         {
             List<Device> devices = new List<Device>();
@@ -61,7 +84,7 @@ namespace DAL.Repositories
         public async Task UpdateAsync(Device entity)
         {
             var stringQuery = @"
-            UPDATE Devices SET
+            UPDATE Device SET
                 ProjectId = @ProjectId,
                 Name = @Name,
                 TypeId = @TypeId,

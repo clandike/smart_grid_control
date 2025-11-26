@@ -1,0 +1,51 @@
+﻿@using BAL.DTO
+@model IEnumerable<DeviceViewModel>
+@{
+    var projectId = ViewBag.ProjectId; // або ViewData["ProjectId"]
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Devices</h2>
+        <a asp-controller="Device" asp-action="Create" asp-route-projectId="@projectId" class="btn btn-success">
+            + Add New Device
+        </a>
+    </div>
+
+    <div class="row">
+        @foreach (var device in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@device.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Type:</strong> @device.TypeName</p>
+                        <p><strong>Rated Power:</strong> @device.RatedPower kW</p>
+                        <p><strong>Priority:</strong> @device.Priority</p>
+                        <p><strong>Critical:</strong> @(device.Critical ? "Yes" : "No")</p>
+                        <p>
+                            <strong>Flexibility:</strong>
+                            @device.FlexibilityStart.ToString("HH:mm") - @device.FlexibilityEnd.ToString("HH:mm")
+                        </p>
+                        <p><strong>State:</strong> @device.StateName</p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a asp-controller="Device" asp-action="Edit" asp-route-id="@device.Id" class="btn btn-warning btn-sm">Edit</a>
+                        <form asp-controller="Device" asp-action="Delete" asp-route-id="@device.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Кнопка Back -->
+    <div class="mt-4">
+        <a asp-controller="Project" asp-action="Index" class="btn btn-outline-secondary px-4">
+            Back to Projects
+        </a>
+    </div>
+</div>

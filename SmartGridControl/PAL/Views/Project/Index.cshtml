@@ -1,28 +1,69 @@
-﻿@using BAL.DTO
-@model IEnumerable<ProjectDTO>
+﻿@model IEnumerable<ProjectViewModel>
 @{
     ViewData["Title"] = "Projects";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Projects</h2>
-    <div class="row">
-        @foreach (var project in Model)
-        {
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">@project.Name</h5>
-                        <p class="card-text">
-                            <strong>Location:</strong> @project.Location <br />
-                            <strong>Time Zone:</strong> @project.TimeZone <br />
-                            <strong>Unit:</strong> @project.UnitId <br />
-                            <strong>Created:</strong> @project.CreatedAt.ToString("yyyy-MM-dd HH:mm")
-                        </p>
-                        <a asp-page="" asp-route-id="@project.Id" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-            </div>
-        }
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Projects</h2>
+
+        <a asp-controller="project" asp-action="create" class="btn btn-success px-4">
+            <i class="bi bi-plus-lg"></i> Add Project
+        </a>
     </div>
+
+    @if (Model == null)
+    {
+        <div class="alert alert-info text-center">
+            No projects found. Click "Add Project" to create a new one.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var project in Model)
+            {
+                <div class="col-md-4">
+                    <a asp-controller="Device" asp-action="Index" asp-route-id="@project.Id" class="text-decoration-none text-dark">
+                        <div class="card h-100 shadow-sm project-card">
+
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">@project.Name</h5>
+                                <p class="card-text small text-muted mb-2">
+                                    <i class="bi bi-geo-alt"></i> @project.Location
+                                </p>
+
+                                <p class="card-text">
+                                    <strong>Time Zone:</strong> @project.TimeZone <br />
+                                    <strong>Unit:</strong> #@project.UnitName <br />
+                                    <strong>Created:</strong> @project.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                                </p>
+
+                                <a asp-controller="Planner" asp-action="Index" asp-route-projectId="@project.Id" class="btn btn-primary mt-2">
+                                    <i class="bi bi-calendar-check"></i> Open Planner
+                                </a>
+                                <form asp-controller="Project" asp-action="Delete" asp-route-id="@project.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
 </div>
+
+<style>
+    .project-card {
+        border-radius: 12px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+</style>

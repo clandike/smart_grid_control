@@ -1,0 +1,24 @@
+﻿@model Planner.Core.ScheduleResult
+
+<div class="container mt-5">
+    <h2 class="fw-bold mb-4">HTML Звіт — Проєкт @Model.ProjectId</h2>
+
+    <p><strong>Економія:</strong> @Model.Savings.ToString("0.00") грн</p>
+    <p><strong>Вартість до:</strong> @Model.CostBefore.ToString("0.00") грн</p>
+    <p><strong>Вартість після:</strong> @Model.CostAfter.ToString("0.00") грн</p>
+
+    <hr />
+
+    <h4>Інтервали</h4>
+    <ul>
+        @foreach (var interval in Model.Intervals)
+        {
+            <li>
+                <strong>@interval.Start.ToLocalTime().ToString("HH:mm")</strong> —
+                @interval.End.ToLocalTime().ToString("HH:mm"),
+                Ціна: @interval.Price.ToString("0.00"),
+                Навантаження: @interval.TotalLoad кВт
+            </li>
+        }
+    </ul>
+</div>

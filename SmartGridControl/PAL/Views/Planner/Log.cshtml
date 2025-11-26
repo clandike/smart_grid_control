@@ -1,0 +1,26 @@
+﻿@model IEnumerable<DecisionLogEntry>
+
+<h2>Decision Log</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>Device</th>
+            <th>Action</th>
+            <th>Expected Saving</th>
+            <th>Reason</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <td>@log.Time.ToString("HH:mm")</td>
+                <td>@log.DeviceName</td>
+                <td>@log.Action</td>
+                <td>@log.ExpectedSaving</td>
+                <td>@log.Reason</td>
+            </tr>
+        }
+    </tbody>
+</table>

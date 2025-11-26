@@ -28,20 +28,10 @@
                 </div>
 
                 <div class="mb-3">
-                    <select name="@Model.UnitId" class="form-select">
-                        <option value="">Одиниці</option>
-                        @foreach (var unit in ViewBag.Units as IEnumerable<string>)
-                        {
-                            <option value="@unit">@unit</option>
-                        }
-                    </select>
-                    </div>
-                
-                @* <div class="mb-3">
-                    <label asp-for="@Model.UnitId" class="form-label fw-semibold"></label>
-                    <input asp-for="@Model.UnitId" type="number" class="form-control" />
-                    <span asp-validation-for="@Model.UnitId" class="text-danger"></span>
-                </div> *@
+                    <label asp-for="UnitId" class="form-label fw-semibold"></label>
+                    <select asp-for="UnitId" asp-items="ViewBag.Units" class="form-select"></select>
+                    <span asp-validation-for="UnitId" class="text-danger"></span>
+                </div>
 
                 <div class="d-flex justify-content-between mt-4">
                     <a asp-controller="project" asp-action="index" class="btn btn-outline-secondary px-4">

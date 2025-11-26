@@ -4,6 +4,9 @@ using BAL.Services.Interfaces;
 using DAL.Connection;
 using DAL.Repositories;
 using DAL.Repositories.Interfaces;
+using PAL.Service;
+using PAL.Service.Interface;
+using Planner.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +32,8 @@ builder.Services.AddScoped<IStateService, StateService>();
 builder.Services.AddScoped<IUnitRepository, UnitRepository>();
 builder.Services.AddScoped<IUnitService, UnitService>();
 
+builder.Services.AddScoped<ISelectListService, SelectListService>();
+builder.Services.AddScoped<ISchedulerService, SchedulerService>();
 
 builder.Services.AddControllersWithViews();
 

@@ -1,0 +1,100 @@
+﻿@using BAL.DTO
+@model DeviceDTO
+
+<div class="container mt-5" style="max-width: 800px;">
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <h2 class="mb-4 fw-bold text-center">
+                @(Model.Id == 0 ? "Create New Device" : "Update Device")
+            </h2>
+
+            <form asp-controller="Device" asp-action="@(Model.Id == 0 ? "Create" : "Edit")" method="post">
+                @if (Model.Id != 0)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+
+                <input type="hidden" asp-for="ProjectId" />
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-semibold"></label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter device name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <!-- Type -->
+                <div class="mb-3">
+                    <label asp-for="TypeId" class="form-label fw-semibold"></label>
+                    <select asp-for="TypeId" asp-items="ViewBag.Types" class="form-select"></select>
+                    <span asp-validation-for="TypeId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="RatedPower" class="form-label fw-semibold"></label>
+                    <input asp-for="RatedPower" class="form-control" />
+                    <span asp-validation-for="RatedPower" class="text-danger"></span>
+                </div>
+
+                <!-- Priority -->
+                <div class="mb-3">
+                    <label asp-for="Priority" class="form-label fw-semibold"></label>
+                    <select asp-for="Priority" asp-items="ViewBag.Priorities" class="form-select"></select>
+                    <span asp-validation-for="Priority" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input asp-for="Critical" class="form-check-input" />
+                    <label asp-for="Critical" class="form-check-label fw-semibold"></label>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MinOnTime" class="form-label fw-semibold"></label>
+                    <input asp-for="MinOnTime" class="form-control" />
+                    <span asp-validation-for="MinOnTime" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MinOffTime" class="form-label fw-semibold"></label>
+                    <input asp-for="MinOffTime" class="form-control" />
+                    <span asp-validation-for="MinOffTime" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="EstimatedEnergyPerCycle" class="form-label fw-semibold"></label>
+                    <input asp-for="EstimatedEnergyPerCycle" class="form-control" />
+                    <span asp-validation-for="EstimatedEnergyPerCycle" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FlexibilityStart" class="form-label fw-semibold"></label>
+                    <input asp-for="FlexibilityStart" type="time" class="form-control" />
+                    <span asp-validation-for="FlexibilityStart" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FlexibilityEnd" class="form-label fw-semibold"></label>
+                    <input asp-for="FlexibilityEnd" type="time" class="form-control" />
+                    <span asp-validation-for="FlexibilityEnd" class="text-danger"></span>
+                </div>
+
+                <!-- State -->
+                <div class="mb-3">
+                    <label asp-for="StateId" class="form-label fw-semibold"></label>
+                    <select asp-for="StateId" asp-items="ViewBag.States" class="form-select"></select>
+                    <span asp-validation-for="StateId" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-controller="Device" asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        @(Model.Id == 0 ? "Create Device" : "Update Device")
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

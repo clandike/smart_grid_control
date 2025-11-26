@@ -2,6 +2,7 @@
 using BAL.DTO;
 using BAL.Services.Interfaces;
 using DAL.Models;
+using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 
 namespace BAL.Services
@@ -33,8 +34,17 @@ namespace BAL.Services
 
         public async Task SaveAsync(DeviceDTO dto)
         {
-            var entityDevice = mapper.Map<Device>(dto);
-            await deviceRepository.UpdateAsync(entityDevice);
+            var emp = await deviceRepository.GetByIdAsync(dto.Id);
+            var entity = mapper.Map<Device>(dto);
+
+            if (emp != null)
+            {
+                await deviceRepository.UpdateAsync(entity);
+            }
+            else
+            {
+                await deviceRepository.CreateAsync(entity);
+            }
         }
 
         public async Task DeleteAsync(int id)
