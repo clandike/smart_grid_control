@@ -1,26 +1,77 @@
 ﻿@model IEnumerable<DecisionLogEntry>
+@{
+    int projectId = ViewBag.ProjectId;
+}
 
-<h2>Decision Log</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Time</th>
-            <th>Device</th>
-            <th>Action</th>
-            <th>Expected Saving</th>
-            <th>Reason</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var log in Model)
+<style>
+    .log-container {
+        background: #fff;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 8px 22px rgba(0,0,0,0.1);
+        margin-top: 35px;
+    }
+
+    h2 {
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    table thead th {
+        background: #f4f5f7;
+        font-weight: 600;
+    }
+
+    .btn-back {
+        border-radius: 20px;
+        padding: 6px 18px;
+    }
+</style>
+
+
+<div class="container">
+    <div class="log-container">
+
+        <h2>Decision Log</h2>
+
+        @if (Model == null || !Model.Any())
         {
-            <tr>
-                <td>@log.Time.ToString("HH:mm")</td>
-                <td>@log.DeviceName</td>
-                <td>@log.Action</td>
-                <td>@log.ExpectedSaving</td>
-                <td>@log.Reason</td>
-            </tr>
+            <div class="alert alert-info">
+                No log entries available.
+            </div>
         }
-    </tbody>
-</table>
+        else
+        {
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Device</th>
+                        <th>Action</th>
+                        <th>Expected Saving</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td>@log.Time.ToString("HH:mm")</td>
+                            <td>@log.DeviceName</td>
+                            <td>@log.Action</td>
+                            <td>@log.ExpectedSaving.ToString("0.00")</td>
+                            <td>@log.Reason</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <div class="mt-4">
+            <a asp-controller="Planner" asp-action="Index" asp-route-projectId="@projectId" class="btn btn-outline-secondary btn-back">
+                Back to Planner
+            </a>
+        </div>
+
+    </div>
+</div>

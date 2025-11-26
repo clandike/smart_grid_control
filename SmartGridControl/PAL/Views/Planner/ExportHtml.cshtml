@@ -1,24 +1,96 @@
 ﻿@model Planner.Core.ScheduleResult
 
-<div class="container mt-5">
-    <h2 class="fw-bold mb-4">HTML Звіт — Проєкт @Model.ProjectId</h2>
+<style>
+    body {
+        background-color: #f4f5f7;
+        font-family: "Segoe UI", sans-serif;
+    }
 
-    <p><strong>Економія:</strong> @Model.Savings.ToString("0.00") грн</p>
-    <p><strong>Вартість до:</strong> @Model.CostBefore.ToString("0.00") грн</p>
-    <p><strong>Вартість після:</strong> @Model.CostAfter.ToString("0.00") грн</p>
+    .report-container {
+        background: #fff;
+        border-radius: 14px;
+        padding: 30px;
+        box-shadow: 0 8px 22px rgba(0,0,0,0.1);
+    }
 
-    <hr />
+    h2 {
+        font-weight: 700;
+        color: #222;
+    }
 
-    <h4>Інтервали</h4>
-    <ul>
-        @foreach (var interval in Model.Intervals)
-        {
-            <li>
-                <strong>@interval.Start.ToLocalTime().ToString("HH:mm")</strong> —
-                @interval.End.ToLocalTime().ToString("HH:mm"),
-                Ціна: @interval.Price.ToString("0.00"),
-                Навантаження: @interval.TotalLoad кВт
-            </li>
+    h4 {
+        margin-top: 30px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .summary p {
+        font-size: 1rem;
+        margin: 6px 0;
+        color: #444;
+    }
+
+    .interval-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 15px;
+    }
+
+    .interval-item {
+        background: #fafafa;
+        border: 1px solid #e3e3e3;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: background .15s;
+    }
+
+        .interval-item:hover {
+            background: #f0f0f0;
         }
-    </ul>
+
+    .interval-time {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .interval-meta {
+        color: #555;
+        font-size: 0.95rem;
+    }
+</style>
+
+
+<div class="container mt-5">
+    <div class="report-container">
+
+        <h2 class="mb-4">HTML Звіт — Проєкт @Model.ProjectId</h2>
+
+        <div class="summary">
+            <p><strong>Економія:</strong> @Model.Savings.ToString("0.00") грн</p>
+            <p><strong>Вартість до оптимізації:</strong> @Model.CostBefore.ToString("0.00") грн</p>
+            <p><strong>Вартість після оптимізації:</strong> @Model.CostAfter.ToString("0.00") грн</p>
+        </div>
+
+        <hr />
+
+        <h4>Інтервали</h4>
+
+        <ul class="interval-list">
+            @foreach (var interval in Model.Intervals)
+            {
+                <li class="interval-item">
+                    <div class="interval-time">
+                        @interval.Start.ToLocalTime().ToString("HH:mm") —
+                        @interval.End.ToLocalTime().ToString("HH:mm")
+                    </div>
+                    <div class="interval-meta mt-1">
+                        Ціна: <strong>@interval.Price.ToString("0.00")</strong> грн/кВт⋅год<br />
+                        Навантаження: <strong>@interval.TotalLoad кВт</strong>
+                    </div>
+                </li>
+            }
+        </ul>
+
+    </div>
 </div>

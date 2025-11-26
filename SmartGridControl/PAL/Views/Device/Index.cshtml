@@ -1,14 +1,52 @@
 ﻿@using BAL.DTO
 @model IEnumerable<DeviceViewModel>
 @{
-    var projectId = ViewBag.ProjectId; // або ViewData["ProjectId"]
+    var projectId = ViewBag.ProjectId;
 }
 
+<style>
+    .device-card {
+        transition: transform .2s ease, box-shadow .2s ease;
+        border: none;
+        border-radius: 12px;
+    }
+
+        .device-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+    .device-header {
+        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+        border-radius: 12px 12px 0 0 !important;
+    }
+
+    .btn-rounded {
+        border-radius: 20px;
+        padding: 6px 16px;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .card-body p {
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+    }
+</style>
+
 <div class="container mt-5">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Devices</h2>
-        <a asp-controller="Device" asp-action="Create" asp-route-projectId="@projectId" class="btn btn-success">
-            + Add New Device
+        <h2 class="fw-bold mb-0">Devices</h2>
+
+        <a asp-controller="Device"
+           asp-action="Create"
+           asp-route-Id="@projectId"
+           class="btn btn-success btn-rounded shadow-sm">
+            Add New Device
         </a>
     </div>
 
@@ -16,36 +54,57 @@
         @foreach (var device in Model)
         {
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">@device.Name</h5>
+                <div class="card device-card shadow-sm h-100">
+
+                    <div class="card-header text-white device-header">
+                        <h5 class="mb-0 fw-semibold">@device.Name</h5>
                     </div>
+
                     <div class="card-body">
-                        <p><strong>Type:</strong> @device.TypeName</p>
-                        <p><strong>Rated Power:</strong> @device.RatedPower kW</p>
-                        <p><strong>Priority:</strong> @device.Priority</p>
-                        <p><strong>Critical:</strong> @(device.Critical ? "Yes" : "No")</p>
+                        <p><span class="info-label">Type:</span> @device.TypeName</p>
+                        <p><span class="info-label">Rated Power:</span> @device.RatedPower kW</p>
+                        <p><span class="info-label">Priority:</span> @device.Priority</p>
+                        <p><span class="info-label">Critical:</span> @(device.Critical ? "Yes" : "No")</p>
                         <p>
-                            <strong>Flexibility:</strong>
-                            @device.FlexibilityStart.ToString("HH:mm") - @device.FlexibilityEnd.ToString("HH:mm")
+                            <span class="info-label">Flexibility:</span>
+                            @device.FlexibilityStart.ToString("HH:mm")
+                            – @device.FlexibilityEnd.ToString("HH:mm")
                         </p>
-                        <p><strong>State:</strong> @device.StateName</p>
+                        <p><span class="info-label">State:</span> @device.StateName</p>
                     </div>
+
                     <div class="card-footer d-flex justify-content-between">
-                        <a asp-controller="Device" asp-action="Edit" asp-route-id="@device.Id" class="btn btn-warning btn-sm">Edit</a>
-                        <form asp-controller="Device" asp-action="Delete" asp-route-id="@device.Id" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        <a asp-controller="Device"
+                           asp-action="Edit"
+                           asp-route-id="@device.Id"
+                           class="btn btn-warning btn-sm btn-rounded px-3">
+                            Edit
+                        </a>
+
+                        <form asp-controller="Device"
+                              asp-action="Delete"
+                              asp-route-id="@device.Id"
+                              method="post"
+                              class="d-inline">
+
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm btn-rounded px-3">
+                                Delete
+                            </button>
                         </form>
                     </div>
+
                 </div>
             </div>
         }
     </div>
 
-    <!-- Кнопка Back -->
     <div class="mt-4">
-        <a asp-controller="Project" asp-action="Index" class="btn btn-outline-secondary px-4">
+        <a asp-controller="Project"
+           asp-action="Index"
+           class="btn btn-outline-secondary btn-rounded px-4">
             Back to Projects
         </a>
     </div>
+
 </div>

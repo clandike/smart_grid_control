@@ -1,9 +1,12 @@
-﻿@using System.Text.Json
-@model Planner.Core.ScheduleResult
+﻿@model Planner.Core.ScheduleResult
+@{
+    ViewData["Title"] = "Planner";
+}
 
 <div class="container mt-5">
-    <h2 class="fw-bold mb-4">Планувальник — Проєкт @Model.ProjectId</h2>
+    <h2 class="fw-bold mb-4">Planner — Проєкт @Model.ProjectId</h2>
 
+    <!-- Бейджі економії -->
     <div class="mb-3">
         <span class="badge bg-success">Економія: @Model.Savings.ToString("0.00") грн</span>
         <span class="badge bg-secondary ms-2">Вартість до: @Model.CostBefore.ToString("0.00")</span>
@@ -11,15 +14,17 @@
     </div>
 
     <!-- Кнопки дій -->
-    <form asp-action="ApplySchedule" asp-route-projectId="@Model.ProjectId" method="post" class="d-inline">
-        <button type="submit" class="btn btn-primary">Apply schedule</button>
-    </form>
-    <form asp-action="SimulateStep" asp-route-projectId="@Model.ProjectId" method="post" class="d-inline">
-        <button type="submit" class="btn btn-secondary">Simulate step</button>
-    </form>
-    <a asp-action="ExportHtml" class="btn btn-outline-info">Export HTML</a>
-    <a asp-action="ExportPdf" class="btn btn-outline-danger">Export PDF</a>
-    <a asp-action="Log" class="btn btn-outline-danger">Show log</a>
+    <div class="mb-4">
+        <form asp-action="ApplySchedule" asp-route-projectId="@Model.ProjectId" method="post" class="d-inline">
+            <button type="submit" class="btn btn-primary">Apply schedule</button>
+        </form>
+        <form asp-action="SimulateStep" asp-route-projectId="@Model.ProjectId" method="post" class="d-inline ms-2">
+            <button type="submit" class="btn btn-secondary">Simulate step</button>
+        </form>
+        <a asp-action="ExportHtml" class="btn btn-outline-info ms-2">Export HTML</a>
+        <a asp-action="ExportPdf" class="btn btn-outline-danger ms-2">Export PDF</a>
+        <a asp-action="Log" asp-route-id="@Model.ProjectId" class="btn btn-outline-dark ms-2">Show log</a>
+    </div>
 
     <hr />
 
@@ -37,7 +42,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var interval in Model.Intervals.Take(1)) // показати поточний інтервал
+            @foreach (var interval in Model.Intervals.Take(1)) // поточний інтервал
             {
                 foreach (var d in interval.Decisions)
                 {
@@ -49,7 +54,7 @@
                         <td>@d.RatedPower кВт</td>
                         <td>@d.Notes</td>
                         <td>
-                            <form asp-action="OverrideDevice" method="post">
+                            <form asp-action="OverrideDevice" method="post" class="d-inline">
                                 <input type="hidden" name="deviceId" value="@d.DeviceId" />
                                 <button type="submit" name="forceOn" value="true" class="btn btn-success btn-sm">Force ON</button>
                                 <button type="submit" name="forceOn" value="false" class="btn btn-danger btn-sm">Force OFF</button>
@@ -60,45 +65,48 @@
             }
         </tbody>
     </table>
+
+    <!-- Графік тарифів + навантаження -->
+    <div class="mt-4">
+        <canvas id="chart" height="400"></canvas>
+    </div>
+
     <!-- Кнопка Back -->
     <div class="mt-4">
-        <a asp-controller="Project" asp-action="Index" class="btn btn-outline-secondary px-4">
-            Back to Projects
-        </a>
+        <a asp-controller="Project" asp-action="Index" class="btn btn-outline-secondary px-4">Back to Projects</a>
     </div>
-    <!-- Графік тарифів + навантаження -->
-    <div id="chart" style="height:400px;"></div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var ctx = document.getElementById('chart').getContext('2d');
-        var chart = new Chart(ctx, {
+        const ctx = document.getElementById('chart').getContext('2d');
+        const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: @Html.Raw(JsonSerializer.Serialize(Model.Intervals.Select(i => i.Start.ToLocalTime().ToString("HH:mm")))),
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Intervals.Select(i => i.Start.ToLocalTime().ToString("HH:mm")))),
                 datasets: [
                     {
                         label: 'Tariff (UAH/kWh)',
-                       data: @Html.Raw(JsonSerializer.Serialize(Model.Intervals.Select(i => i.Price))),
+                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Intervals.Select(i => i.Price))),
                         borderColor: 'blue',
                         fill: false,
                         yAxisID: 'y1'
                     },
-                            {
-            label: 'Load (kW)',
-            data: @Html.Raw(JsonSerializer.Serialize(Model.Intervals.Select(i => i.TotalLoad))), // ✅ правильне поле
-            borderColor: 'red',
-            fill: false,
-            yAxisID: 'y2'
-        }
+                    {
+                        label: 'Load (kW)',
+                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Intervals.Select(i => i.TotalLoad))),
+                        borderColor: 'red',
+                        fill: false,
+                        yAxisID: 'y2'
+                    }
                 ]
             },
             options: {
+                responsive: true,
                 scales: {
-                    y1: { type: 'linear', position: 'left' },
-                    y2: { type: 'linear', position: 'right' }
+                    y1: { type: 'linear', position: 'left', title: { display: true, text: 'Tariff (UAH/kWh)' } },
+                    y2: { type: 'linear', position: 'right', title: { display: true, text: 'Load (kW)' } }
                 }
             }
         });

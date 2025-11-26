@@ -65,12 +65,12 @@ namespace PAL.Controllers
         // GET: /Device/Create
         public async Task<IActionResult> CreateAsync(int id)
         {
-            var dev = new DeviceDTO() { ProjectId = id };
+            var dto = new DeviceDTO() { ProjectId = id };
             ViewBag.States = await selectListService.GetStatesAsync();
             ViewBag.Types = await selectListService.GetTypesAsync();
             ViewBag.Priorities = await selectListService.GetPrioritiesAsync();
 
-            return View("DeviceForm", dev);
+            return View("DeviceForm", dto);
         }
 
         // POST: /Device/Create

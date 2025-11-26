@@ -20,6 +20,7 @@ namespace WebApp.Controllers
         private readonly IDeviceTypeService deviceTypeService;
 
         private static readonly List<DecisionLogEntry> decisionLog = new();
+        private static ScheduleResult lastSchedule;
 
         public PlannerController(IDeviceService deviceService, IMapper mapper, ISchedulerService schedulerService, IPriorityService priorityService, IStateService stateService, IDeviceTypeService deviceTypeService)
         {
@@ -42,7 +43,6 @@ namespace WebApp.Controllers
                 var priority = await priorityService.GetByIdAsync(item.Priority);
                 var type = await deviceTypeService.GetByIdAsync(item.TypeId);
                 var state = await stateService.GetByIdAsync(item.StateId);
-
 
                 devices.Add(new DeviceViewModel()
                 {
@@ -69,20 +69,37 @@ namespace WebApp.Controllers
             var prices = Enumerable.Range(0, T).Select(i => i % 2 == 0 ? 6m : 3m).ToList();
             var baseline = Enumerable.Range(0, T).Select(i => 10m).ToList();
 
-            var schedule = schedulerService.BuildSchedule(projectId, devices, prices, baseline, intervalMinutes, capacityLimit);
+            // --------------------------
+            // ВАЖЛИВО: якщо simulateStep змінив lastSchedule → НЕ робимо новий
+            // --------------------------
+            ScheduleResult schedule;
 
+            if (lastSchedule == null)
+            {
+                schedule = schedulerService.BuildSchedule(projectId, devices, prices, baseline, intervalMinutes, capacityLimit);
+                lastSchedule = schedule;
+            }
+            else
+            {
+                schedule = lastSchedule; // показуємо оновлений графік
+            }
+
+            // додаємо лог, якщо ще не додали для цих інтервалів
             foreach (var interval in schedule.Intervals)
             {
                 foreach (var d in interval.Decisions)
                 {
-                    decisionLog.Add(new DecisionLogEntry
+                    if (!decisionLog.Any(x => x.Time == interval.Start && x.DeviceName == d.DeviceName))
                     {
-                        Time = interval.Start,
-                        DeviceName = d.DeviceName,
-                        Action = d.On ? "ON" : "OFF",
-                        ExpectedSaving = CalculateSaving(d, prices, baseline), // твоя функція
-                        Reason = d.Notes
-                    });
+                        decisionLog.Add(new DecisionLogEntry
+                        {
+                            Time = interval.Start,
+                            DeviceName = d.DeviceName,
+                            Action = d.On ? "ON" : "OFF",
+                            ExpectedSaving = CalculateSaving(d, prices, baseline, 10),
+                            Reason = d.Notes
+                        });
+                    }
                 }
             }
 
@@ -127,14 +144,26 @@ namespace WebApp.Controllers
         [HttpPost("planner/simulate")]
         public IActionResult SimulateStep(int projectId)
         {
-            decisionLog.Add(new DecisionLogEntry
+            if (lastSchedule != null)
             {
-                Time = DateTime.UtcNow,
-                DeviceName = "Simulation",
-                Action = "STEP",
-                ExpectedSaving = 0,
-                Reason = "Simulation step executed"
-            });
+                foreach (var interval in lastSchedule.Intervals)
+                {
+                    foreach (var d in interval.Decisions)
+                    {
+                        // проста симуляція: інвертую ON/OFF
+                        d.On = !d.On;
+                    }
+                }
+
+                decisionLog.Add(new DecisionLogEntry
+                {
+                    Time = DateTime.UtcNow,
+                    DeviceName = "Simulation",
+                    Action = "STEP",
+                    ExpectedSaving = 0,
+                    Reason = "Simulation step executed"
+                });
+            }
 
             TempData["Message"] = "Simulation step executed";
             return RedirectToAction("Index", new { projectId = projectId });
@@ -195,14 +224,13 @@ namespace WebApp.Controllers
 
         // Лог рішень
         [HttpGet("planner/log")]
-        public IActionResult Log()
+        public IActionResult Log(int id)
         {
+            ViewBag.ProjectId = id;
             return View(decisionLog);
         }
-        private decimal CalculateSaving(DeviceDecision d, List<decimal> prices, List<decimal> baseline)
+        private decimal CalculateSaving(DeviceDecision d, List<decimal> prices, List<decimal> baseline, int intervalIndex)
         {
-            int intervalIndex = 40; // потрібно мати це поле у DeviceDecision
-
             decimal price = prices.ElementAtOrDefault(intervalIndex);
             decimal baseLoad = baseline.ElementAtOrDefault(intervalIndex);
 
@@ -211,6 +239,6 @@ namespace WebApp.Controllers
             decimal saving = (baseLoad - actualLoad) * price;
 
             return saving;
-        }
+        }        
     }
 }

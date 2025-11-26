@@ -1,14 +1,61 @@
 ﻿@using BAL.DTO
 @model DeviceDTO
 
-<div class="container mt-5" style="max-width: 800px;">
-    <div class="card shadow-sm">
+<style>
+    .form-card {
+        border-radius: 14px;
+        transition: box-shadow .25s ease;
+    }
+
+        .form-card:hover {
+            box-shadow: 0 10px 26px rgba(0,0,0,0.15);
+        }
+
+    .form-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #444;
+    }
+
+    .form-label {
+        color: #444;
+    }
+
+    .btn-rounded {
+        border-radius: 20px;
+        padding: 8px 20px;
+    }
+
+    .btn-primary {
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+    }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.4);
+        }
+
+    input.form-control, select.form-select {
+        border-radius: 10px;
+        padding: 10px 14px;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+    }
+</style>
+
+<div class="container mt-5" style="max-width: 820px;">
+    <div class="card shadow-sm form-card">
         <div class="card-body p-4">
+
             <h2 class="mb-4 fw-bold text-center">
                 @(Model.Id == 0 ? "Create New Device" : "Update Device")
             </h2>
 
             <form asp-controller="Device" asp-action="@(Model.Id == 0 ? "Create" : "Edit")" method="post">
+
                 @if (Model.Id != 0)
                 {
                     <input type="hidden" asp-for="Id" />
@@ -16,6 +63,7 @@
 
                 <input type="hidden" asp-for="ProjectId" />
 
+                <!-- Name -->
                 <div class="mb-3">
                     <label asp-for="Name" class="form-label fw-semibold"></label>
                     <input asp-for="Name" class="form-control" placeholder="Enter device name" />
@@ -29,6 +77,7 @@
                     <span asp-validation-for="TypeId" class="text-danger"></span>
                 </div>
 
+                <!-- Rated Power -->
                 <div class="mb-3">
                     <label asp-for="RatedPower" class="form-label fw-semibold"></label>
                     <input asp-for="RatedPower" class="form-control" />
@@ -42,35 +91,41 @@
                     <span asp-validation-for="Priority" class="text-danger"></span>
                 </div>
 
+                <!-- Critical -->
                 <div class="mb-3 form-check">
                     <input asp-for="Critical" class="form-check-input" />
                     <label asp-for="Critical" class="form-check-label fw-semibold"></label>
                 </div>
 
+                <!-- Min On Time -->
                 <div class="mb-3">
                     <label asp-for="MinOnTime" class="form-label fw-semibold"></label>
                     <input asp-for="MinOnTime" class="form-control" />
                     <span asp-validation-for="MinOnTime" class="text-danger"></span>
                 </div>
 
+                <!-- Min Off Time -->
                 <div class="mb-3">
                     <label asp-for="MinOffTime" class="form-label fw-semibold"></label>
                     <input asp-for="MinOffTime" class="form-control" />
                     <span asp-validation-for="MinOffTime" class="text-danger"></span>
                 </div>
 
+                <!-- Energy per cycle -->
                 <div class="mb-3">
                     <label asp-for="EstimatedEnergyPerCycle" class="form-label fw-semibold"></label>
                     <input asp-for="EstimatedEnergyPerCycle" class="form-control" />
                     <span asp-validation-for="EstimatedEnergyPerCycle" class="text-danger"></span>
                 </div>
 
+                <!-- Flexibility Start -->
                 <div class="mb-3">
                     <label asp-for="FlexibilityStart" class="form-label fw-semibold"></label>
                     <input asp-for="FlexibilityStart" type="time" class="form-control" />
                     <span asp-validation-for="FlexibilityStart" class="text-danger"></span>
                 </div>
 
+                <!-- Flexibility End -->
                 <div class="mb-3">
                     <label asp-for="FlexibilityEnd" class="form-label fw-semibold"></label>
                     <input asp-for="FlexibilityEnd" type="time" class="form-control" />
@@ -84,12 +139,17 @@
                     <span asp-validation-for="StateId" class="text-danger"></span>
                 </div>
 
+                <!-- Buttons -->
                 <div class="d-flex justify-content-between mt-4">
-                    <a asp-controller="Device" asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
-                    <button type="submit" class="btn btn-primary px-4">
+                    <a asp-controller="Device" asp-action="Index" asp-route-id="@Model.ProjectId" class="btn btn-outline-secondary btn-rounded px-4">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-primary btn-rounded px-4">
                         @(Model.Id == 0 ? "Create Device" : "Update Device")
                     </button>
                 </div>
+
             </form>
         </div>
     </div>

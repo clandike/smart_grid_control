@@ -3,19 +3,123 @@
     ViewData["Title"] = "Projects";
 }
 
+<style>
+    body {
+        background-color: #f4f5f7;
+    }
+
+    /* Стиль карток */
+    .project-card {
+        border-radius: 16px;
+        border: 1px solid #e2e2e2;
+        background-color: #ffffff;
+        padding: 1.6rem 1.6rem 1.2rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: box-shadow .3s ease, transform .3s ease;
+    }
+
+        .project-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.12);
+        }
+
+    /* Заголовок */
+    .project-title {
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 0.3rem;
+    }
+
+    /* Локація */
+    .project-location {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    /* Текст */
+    .project-info {
+        font-size: 0.95rem;
+        color: #495057;
+        margin-bottom: 1.2rem;
+        line-height: 1.5rem;
+    }
+
+    /* Кнопки */
+    .btn-open, .btn-delete {
+        border-radius: 20px;
+        padding: 0.45rem 1.25rem;
+        font-size: 0.9rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .btn-open:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+    .btn-add {
+        border-radius: 22px;
+        padding: 8px 22px;
+        font-size: 0.95rem;
+    }
+
+    /* Робимо картку повністю клікабельною */
+    .card-link {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        border-radius: 16px;
+    }
+
+    /* Кнопки поверх картки */
+    .card-actions {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    {
+        padding: 1.2rem 1.2rem 1rem;
+    }
+
+    .project-title {
+        font-size: 1.2rem;
+    }
+
+    .btn-open, .btn-delete {
+        font-size: 0.85rem;
+        padding: 0.35rem 1rem;
+    }
+
+    }
+</style>
+
 <div class="container mt-5">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Projects</h2>
+        <h2 class="fw-bold mb-0">Projects</h2>
 
-        <a asp-controller="project" asp-action="create" class="btn btn-success px-4">
-            <i class="bi bi-plus-lg"></i> Add Project
+        <a asp-controller="Project" asp-action="Create" class="btn btn-success btn-add shadow-sm">
+            Add Project
         </a>
     </div>
 
-    @if (Model == null)
+    @if (Model == null || !Model.Any())
     {
-        <div class="alert alert-info text-center">
+        <div class="alert alert-info text-center py-4">
             No projects found. Click "Add Project" to create a new one.
         </div>
     }
@@ -24,46 +128,52 @@
         <div class="row g-4">
             @foreach (var project in Model)
             {
-                <div class="col-md-4">
-                    <a asp-controller="Device" asp-action="Index" asp-route-id="@project.Id" class="text-decoration-none text-dark">
-                        <div class="card h-100 shadow-sm project-card">
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card shadow-sm">
 
-                            <div class="card-body">
-                                <h5 class="card-title fw-bold">@project.Name</h5>
-                                <p class="card-text small text-muted mb-2">
-                                    <i class="bi bi-geo-alt"></i> @project.Location
-                                </p>
+                        <!-- Задній клікабельний шар -->
+                        <a asp-controller="Device"
+                           asp-action="Index"
+                           asp-route-id="@project.Id"
+                           class="card-link">
+                        </a>
 
-                                <p class="card-text">
-                                    <strong>Time Zone:</strong> @project.TimeZone <br />
-                                    <strong>Unit:</strong> #@project.UnitName <br />
-                                    <strong>Created:</strong> @project.CreatedAt.ToString("yyyy-MM-dd HH:mm")
-                                </p>
+                        <h5 class="project-title">@project.Name</h5>
 
-                                <a asp-controller="Planner" asp-action="Index" asp-route-projectId="@project.Id" class="btn btn-primary mt-2">
-                                    <i class="bi bi-calendar-check"></i> Open Planner
-                                </a>
-                                <form asp-controller="Project" asp-action="Delete" asp-route-id="@project.Id" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                </form>
-                            </div>
-
+                        <div class="project-location">
+                            <i class="bi bi-geo-alt"></i> @project.Location
                         </div>
-                    </a>
+
+                        <div class="project-info">
+                            <strong>Time Zone:</strong> @project.TimeZone <br />
+                            <strong>Unit:</strong> @project.UnitName <br />
+                            <strong>Created:</strong> @project.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                        </div>
+
+                        <!-- Блок кнопок (зверху по z-index) -->
+                        <div class="card-actions">
+                            <a asp-controller="Planner"
+                               asp-action="Index"
+                               asp-route-projectId="@project.Id"
+                               class="btn btn-primary btn-open">
+                                Open Planner
+                            </a>
+
+                            <form asp-controller="Project"
+                                  asp-action="Delete"
+                                  asp-route-id="@project.Id"
+                                  method="post"
+                                  class="d-inline">
+
+                                <button type="submit" class="btn btn-danger btn-delete">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
                 </div>
             }
         </div>
     }
 </div>
-
-<style>
-    .project-card {
-        border-radius: 12px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-        .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-</style>
